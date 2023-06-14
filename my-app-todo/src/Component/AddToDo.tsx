@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Checkbox, Form, FormInstance, Input, Space, message } from 'antd';
+import { Button, Form, FormInstance, Input, Space, message } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import ITypeToDo from './ITypeToDo';
 import axios from 'axios';
 
@@ -55,7 +56,11 @@ const AddToDo = () => {
                         name="name"
                         rules={[{ required: true, message: 'Please input your name!' }]}
                     >
-                        <Input />
+                        <Input
+                            prefix={<UserOutlined />}
+                            placeholder='name'
+                            allowClear
+                        />
                     </Form.Item>
 
                     <Form.Item
@@ -63,7 +68,10 @@ const AddToDo = () => {
                         name="job"
                         rules={[{ required: true, message: 'Please input your job!' }]}
                     >
-                        <Input />
+                        <Input
+                            placeholder='job'
+                            allowClear
+                        />
                     </Form.Item>
 
                     <Form.Item
@@ -71,7 +79,10 @@ const AddToDo = () => {
                         label="avatar"
                         rules={[{ required: true }, { type: 'url', warningOnly: true }, { type: 'string', min: 6 }]}
                     >
-                        <Input placeholder="input placeholder" />
+                        <Input
+                            placeholder="URL"
+                            allowClear
+                        />
                     </Form.Item>
 
                     <Form.Item>
