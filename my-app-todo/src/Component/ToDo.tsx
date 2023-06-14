@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { createRoot } from "react-dom/client";
 import 'antd/dist/reset.css';
 import ITypeToDo from "./ITypeToDo";
 import { Table } from "antd";
@@ -51,7 +50,7 @@ const ToDo = () => {
                     rowKey="id"
                     dataSource={dataSource}
                     columns={columns}
-                />;
+                />
             </>
         </div>
     );
