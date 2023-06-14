@@ -6,16 +6,10 @@ import axios from 'axios';
 const AddToDo = () => {
     const formRef = React.useRef<FormInstance>(null);
     const [data, setData] = useState({});
-    const [success, setSuccess] = useState(false);
     const onFinish = (values: ITypeToDo) => {
-        setSuccess(true);
         setData(values)
         message.success('Submit success!');
         console.log(values); // Access the form values here
-    };
-
-    const onFinishFailed = () => {
-        setSuccess(false);
     };
 
     const onReset = () => {
@@ -25,22 +19,21 @@ const AddToDo = () => {
     useEffect(() => {
 
         async function callApi() {
-            try {
-                if (success) {
+            if (Object.keys(data).length !== 0) {
+                try {
                     const post = await axios.post<ITypeToDo>(
-                        'https://6483e935ee799e32162627a5.mockapi.io/ToDos',
-                        data
+                        'https://6483e935ee799e32162627a5.mockapi.io/ToDos', data
                     );
                     console.log(post);
                     setData({});
                     onReset();
+                } catch (error) {
+                    console.error(error);
                 }
-            } catch (error) {
-                console.error(error);
             }
         }
         callApi()
-    }, [success])
+    }, [data])
 
     return (
         <div>
@@ -52,7 +45,6 @@ const AddToDo = () => {
                     style={{ maxWidth: 600 }}
                     initialValues={{ remember: true }}
                     onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
                     autoComplete="off"
 
                     ref={formRef}
