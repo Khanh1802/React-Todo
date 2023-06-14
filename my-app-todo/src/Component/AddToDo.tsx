@@ -28,7 +28,6 @@ const AddToDo = () => {
                     );
                     console.log(data);
                     console.log(post);
-                    setData({})
                 }
             } catch (error) {
                 console.error(error);
