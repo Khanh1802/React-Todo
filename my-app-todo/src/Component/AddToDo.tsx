@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Checkbox, Form, Input, Space, message } from 'antd';
+import { Button, Checkbox, Form, FormInstance, Input, Space, message } from 'antd';
 import ITypeToDo from './ITypeToDo';
 import axios from 'axios';
 
 const AddToDo = () => {
+    const formRef = React.useRef<FormInstance>(null);
     const [data, setData] = useState({});
     const [success, setSuccess] = useState(false);
     const onFinish = (values: ITypeToDo) => {
@@ -17,6 +18,10 @@ const AddToDo = () => {
         setSuccess(false);
     };
 
+    const onReset = () => {
+        formRef.current?.resetFields();
+    };
+
     useEffect(() => {
 
         async function callApi() {
@@ -26,8 +31,9 @@ const AddToDo = () => {
                         'https://6483e935ee799e32162627a5.mockapi.io/ToDos',
                         data
                     );
-                    console.log(data);
                     console.log(post);
+                    setData({});
+                    onReset();
                 }
             } catch (error) {
                 console.error(error);
@@ -48,6 +54,8 @@ const AddToDo = () => {
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
                     autoComplete="off"
+
+                    ref={formRef}
                 >
 
                     <Form.Item
@@ -81,7 +89,6 @@ const AddToDo = () => {
                             </Button>
                         </Space>
                     </Form.Item>
-
                 </Form>
             </>
         </div>
