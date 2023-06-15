@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import 'antd/dist/reset.css';
 import ITypeToDo from "./ITypeToDo";
-import { Popconfirm, Table, message } from "antd";
+import { Input, Modal, Popconfirm, Table, message } from "antd";
 import axios from 'axios';
 import { ColumnsType } from "antd/es/table";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 
 const ToDo = () => {
@@ -32,26 +33,30 @@ const ToDo = () => {
         {
             title: 'operation',
             dataIndex: 'operation',
-            render: (_, record: { id: React.Key }) =>
-                dataSource.length >= 1 ? (
-                    <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.id)}>
-                        <a>Delete</a>
-                    </Popconfirm>
-                ) : null,
+            render: (_, record) => {
+                return (
+                    <>
+                        <EditOutlined onClick={() => handleEdit(record)} />
+                        <Popconfirm
+                            title="Sure to delete?"
+                            onConfirm={() => setDeleteByID(parseInt(record.id.toString()))}
+                        >
+                            <a> <DeleteOutlined style={{ color: "red", marginLeft: 20 }} /></a>
+                        </Popconfirm>
+                    </>
+                )
+            }
         },
     ]
 
     const [dataSource, setDataSource] = useState<ITypeToDo[]>([])
     const [deleteByID, setDeleteByID] = useState<number>(-1);
+    const [editRecord, setEditRecord] = useState<ITypeToDo | null>(null);
     const [getApi, setGetApi] = useState(false);
-    const handleDelete = (key: React.Key) => {
-        // setNewData(dataSource.filter((item: ITypeToDo) => item.id === key).shift());
-        setDeleteByID(parseInt(key.toString()));
-    };
-
+    const [isEdit, setIsEdit] = useState(false);
 
     useEffect(() => {
-        async function callApi() {
+        async function getDataApi() {
             if (!getApi) {
                 try {
                     const response = await axios.get('https://6483e935ee799e32162627a5.mockapi.io/ToDos');
@@ -63,7 +68,7 @@ const ToDo = () => {
                 }
             }
         }
-        callApi()
+        getDataApi()
     }, [getApi]);
 
     //delete api
@@ -83,6 +88,32 @@ const ToDo = () => {
         deleteApi()
     }, [deleteByID]);
 
+    //update api
+    useEffect(() => {
+        async function putApi() {
+            if (isEdit) {
+                try {
+                    await axios.put(`https://6483e935ee799e32162627a5.mockapi.io/ToDos/${editRecord?.id}`, editRecord);
+                    console.log("edit", editRecord)
+                    message.success('edit success!');
+                    setGetApi(false);
+                    resetEdit();
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+        }
+        putApi()
+    }, [isEdit]);
+
+    const handleEdit = (record: ITypeToDo) => {
+        setEditRecord(record)
+    }
+
+    const resetEdit = () => {
+        setIsEdit(false)
+        setEditRecord(null)
+    }
 
     return (
         <div className="App">
@@ -92,6 +123,43 @@ const ToDo = () => {
                     dataSource={dataSource}
                     columns={columns}
                 />
+                <Modal
+                    title="Edit"
+                    okText="Save"
+                    open={editRecord !== null}
+                    onCancel={() => resetEdit}
+                    onOk={() => {
+                        setIsEdit(true)
+                    }}
+                >
+                    <Input
+                        value={editRecord?.name}
+                        onChange={(e) =>
+                            setEditRecord((prevEditRecord) => ({
+                                ...prevEditRecord as ITypeToDo,
+                                name: e.target.value,
+                            }))
+                        }
+                    />
+                    <Input
+                        value={editRecord?.job}
+                        onChange={(e) =>
+                            setEditRecord((prevEditRecord) => ({
+                                ...prevEditRecord as ITypeToDo,
+                                job: e.target.value,
+                            }))
+                        }
+                    />
+                    <Input
+                        value={editRecord?.avatar}
+                        onChange={(e) =>
+                            setEditRecord((prevEditRecord) => ({
+                                ...prevEditRecord as ITypeToDo,
+                                avatar: e.target.value,
+                            }))
+                        }
+                    />
+                </Modal>
             </>
         </div>
     );

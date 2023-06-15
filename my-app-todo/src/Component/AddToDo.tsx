@@ -19,7 +19,7 @@ const AddToDo = () => {
 
     useEffect(() => {
 
-        async function callApi() {
+        async function postApi() {
             if (Object.keys(data).length !== 0) {
                 try {
                     const post = await axios.post<ITypeToDo>(
@@ -33,7 +33,7 @@ const AddToDo = () => {
                 }
             }
         }
-        callApi()
+        postApi()
     }, [data])
 
     return (
