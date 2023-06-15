@@ -42,11 +42,11 @@ const ToDo = () => {
     ]
 
     const [dataSource, setDataSource] = useState<ITypeToDo[]>([])
-    const [newData, setNewData] = useState<ITypeToDo>();
+    const [deleteByID, setDeleteByID] = useState<number>(-1);
     const [getApi, setGetApi] = useState(false);
     const handleDelete = (key: React.Key) => {
-        setNewData(dataSource.filter((item: ITypeToDo) => item.id === key).shift());
-        // setDataSource(newData);
+        // setNewData(dataSource.filter((item: ITypeToDo) => item.id === key).shift());
+        setDeleteByID(parseInt(key.toString()));
     };
 
 
@@ -56,7 +56,7 @@ const ToDo = () => {
                 try {
                     const response = await axios.get('https://6483e935ee799e32162627a5.mockapi.io/ToDos');
                     setDataSource(response.data)
-                    console.log("take data")
+                    console.log("get data")
                     setGetApi(true);
                 } catch (error) {
                     console.error(error);
@@ -69,12 +69,11 @@ const ToDo = () => {
     //delete api
     useEffect(() => {
         async function deleteApi() {
-            if (newData && Object.keys(newData).length !== 0) {
+            if (deleteByID > -1) {
                 try {
-                    await axios.delete(`https://6483e935ee799e32162627a5.mockapi.io/ToDos/${newData.id}`);
-                    console.log(newData)
-                    setNewData({} as ITypeToDo)
+                    await axios.delete(`https://6483e935ee799e32162627a5.mockapi.io/ToDos/${deleteByID}`);
                     message.success('deleted success!');
+                    setDeleteByID(-1);
                     setGetApi(false);
                 } catch (error) {
                     console.error(error);
@@ -82,7 +81,7 @@ const ToDo = () => {
             }
         }
         deleteApi()
-    }, [newData]);
+    }, [deleteByID]);
 
 
     return (
