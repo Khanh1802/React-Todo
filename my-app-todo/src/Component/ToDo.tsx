@@ -65,7 +65,7 @@ const ToDo = () => {
                     const response = await axios.get('https://6483e935ee799e32162627a5.mockapi.io/ToDos');
                     if (search) {
                         setIsLoading(true);
-                        const results: ITypeToDo[] = response.data.filter((resp: ITypeToDo) =>
+                        const results: ITypeToDo[] = response.data.find((resp: ITypeToDo) =>
                             resp.name.toLowerCase().includes(search.toLowerCase())
                             ||
                             resp.job.toLowerCase().includes(search.toLowerCase())
