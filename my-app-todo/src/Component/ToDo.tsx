@@ -113,6 +113,7 @@ const ToDo = () => {
     const resetEdit = () => {
         setIsEdit(false)
         setEditRecord(null)
+        console.log(editRecord)
     }
 
     return (
@@ -127,7 +128,7 @@ const ToDo = () => {
                     title="Edit"
                     okText="Save"
                     open={editRecord !== null}
-                    onCancel={() => resetEdit}
+                    onCancel={() => setEditRecord(null)}
                     onOk={() => {
                         setIsEdit(true)
                     }}
