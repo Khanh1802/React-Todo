@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import 'antd/dist/reset.css';
 import ITypeToDo from "./ITypeToDo";
-import { Input, Modal, Popconfirm, Table, message } from "antd";
+import { Empty, Input, Modal, Popconfirm, Table, message } from "antd";
 import axios from 'axios';
 import { ColumnsType } from "antd/es/table";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, FileSearchOutlined } from "@ant-design/icons";
 
 
 const ToDo = () => {
@@ -36,12 +36,12 @@ const ToDo = () => {
             render: (_, record) => {
                 return (
                     <>
-                        <EditOutlined onClick={() => handleEdit(record)} />
+                        <EditOutlined onClick={() => handleEdit(record)} style={{ fontSize: 20, marginRight: 25 }} />
                         <Popconfirm
                             title="Sure to delete?"
                             onConfirm={() => setDeleteByID(parseInt(record.id.toString()))}
                         >
-                            <a> <DeleteOutlined style={{ color: "red", marginLeft: 20 }} /></a>
+                            <a> <DeleteOutlined style={{ fontSize: 20, color: "red", marginLeft: 5 }} /></a>
                         </Popconfirm>
                     </>
                 )
@@ -52,16 +52,27 @@ const ToDo = () => {
     const [dataSource, setDataSource] = useState<ITypeToDo[]>([])
     const [deleteByID, setDeleteByID] = useState<number>(-1);
     const [editRecord, setEditRecord] = useState<ITypeToDo | null>(null);
+    const [search, setSearch] = useState<string | null>(null);
     const [getApi, setGetApi] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         async function getDataApi() {
             if (!getApi) {
                 try {
-                    const response = await axios.get('https://6483e935ee799e32162627a5.mockapi.io/ToDos');
-                    setDataSource(response.data)
-                    console.log("get data")
+                    setIsLoading(true);
+                    if (search) {
+                        const response = await axios.get('https://6483e935ee799e32162627a5.mockapi.io/ToDos', { params: { search: search } });
+                        setDataSource(response.data);
+                        setSearch(null)
+                        console.log("call search")
+                    } else {
+                        const response = await axios.get('https://6483e935ee799e32162627a5.mockapi.io/ToDos');
+                        setDataSource(response.data)
+                        console.log("call get")
+                    }
+                    setIsLoading(false);
                     setGetApi(true);
                 } catch (error) {
                     console.error(error);
@@ -69,7 +80,7 @@ const ToDo = () => {
             }
         }
         getDataApi()
-    }, [getApi]);
+    }, [getApi, search]);
 
     //delete api
     useEffect(() => {
@@ -116,9 +127,26 @@ const ToDo = () => {
         console.log(editRecord)
     }
 
+    const handleClickSearch = (value: string) => {
+        if (value) {
+            setSearch(value);
+        }
+        setGetApi(false);
+    }
+
     return (
         <div className="App">
             <>
+                <Input.Search
+                    placeholder="Search here..."
+                    size="large"
+                    style={{ marginBottom: 8, width: 600 }}
+                    prefix={<FileSearchOutlined />}
+                    loading={isLoading}
+                    allowClear
+                    enterButton="Search"
+                    onSearch={handleClickSearch}
+                />
                 <Table
                     rowKey="id"
                     dataSource={dataSource}
