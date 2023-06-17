@@ -60,23 +60,19 @@ const ToDo = () => {
     useEffect(() => {
         async function getDataApi() {
             if (!getApi) {
-                console.log(search, "callgetapi")
                 try {
-                    const response = await axios.get('https://6483e935ee799e32162627a5.mockapi.io/ToDos');
+                    setIsLoading(true);
                     if (search) {
-                        setIsLoading(true);
-                        const results: ITypeToDo[] = response.data.find((resp: ITypeToDo) =>
-                            resp.name.toLowerCase().includes(search.toLowerCase())
-                            ||
-                            resp.job.toLowerCase().includes(search.toLowerCase())
-                        );
-                        setDataSource(results);
+                        const response = await axios.get('https://6483e935ee799e32162627a5.mockapi.io/ToDos', { params: { search: search } });
+                        setDataSource(response.data);
                         setSearch(null)
-                        setIsLoading(false);
+                        console.log("call search")
                     } else {
+                        const response = await axios.get('https://6483e935ee799e32162627a5.mockapi.io/ToDos');
                         setDataSource(response.data)
+                        console.log("call get")
                     }
-                    console.log("get data")
+                    setIsLoading(false);
                     setGetApi(true);
                 } catch (error) {
                     console.error(error);
@@ -134,7 +130,6 @@ const ToDo = () => {
     const handleClickSearch = (value: string) => {
         if (value) {
             setSearch(value);
-            console.log("empty?", value)
         }
         setGetApi(false);
     }
